@@ -1,0 +1,26 @@
+{
+  "name": "db2-ui-backend",
+  "description": "Backend service for db2-ui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Raunak-S/db2-ui-backend.git"
+  },
+  "author": "Raunak S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Raunak-S/db2-ui-backend/issues"
+  },
+  "homepage": "https://github.com/Raunak-S/db2-ui-backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "ibm_db": "^2.7.4"
+  }
+}
