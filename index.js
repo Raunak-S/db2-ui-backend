@@ -16,6 +16,9 @@ const app = express()
 const port = 8080
 
 app.use(cors())
+app.use(express.json()) // for parsing application/json
+app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
 
 app.get('/', (req, res) => {
     res.send('API V1')
@@ -33,10 +36,22 @@ app.get('/rows', (req, res) => {
     })
 })
 
+app.get('/columns', (req, res) => {
+    pool.open(connStr, (err, db) => {
+        if (err) throw err;
+        db.query("select COLNAME, COLNO, TYPENAME, LENGTH from syscat.columns where tabname='PERSONS'").then(data => {
+            res.send(data);
+            db.closeSync();
+        }, err => {
+            console.log(err);
+        })
+    })
+})
+
 app.delete('/deleteRow/:firstName', (req, res) => {
     pool.open(connStr, (err, db) => {
         if (err) throw err;
-        db.query(`delete from Persons where FirstName='${req.params.firstName}'`).then(data => {
+        db.query(`delete from Persons where FirstName='${req.params.firstName}'`).then(() => {
             res.status(200)
             res.send(`Row deleted successfully\n`)
             db.closeSync
@@ -48,6 +63,29 @@ app.delete('/deleteRow/:firstName', (req, res) => {
     })
 })
 
+app.get('/getInfo', (req, res) => {
+    pool.open(connStr, (err, db) => {
+        if (err) throw err;
+        db.getInfo(ibmdb.SQL_ACCESSIBLE_TABLES, (error, data) => {
+            if (error) throw error;
+            res.send(data)
+            db.closeSync()
+        })
+    })
+})
+
+app.post('/query', (req, res) => {
+    pool.open(connStr, (err, db) => {
+        if (err) throw err;
+        console.log(req.body)
+        db.query(req.body.commands).then(data => {
+            res.send(data)
+            db.closeSync()
+        }, err => {
+            res.error(err)
+        })
+    })
+})
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
