@@ -77,9 +77,22 @@ app.get('/getInfo', (req, res) => {
 app.post('/query', (req, res) => {
     pool.open(connStr, (err, db) => {
         if (err) throw err;
-        console.log(req.body)
         db.query(req.body.commands).then(data => {
             res.send(data)
+            db.closeSync()
+        }, err => {
+            res.error(err)
+        })
+    })
+})
+
+app.get('/getTables', (req, res) => {
+    pool.open(connStr, (err, db) => {
+        if (err) throw err;
+        db.query(`select tabname, tabschema from syscat.tables`).then(data => {
+            res.send(data.filter(table => {
+                return table.TABSCHEMA === 'DB2INST1'
+            }))
             db.closeSync()
         }, err => {
             res.error(err)
